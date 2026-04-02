@@ -1,0 +1,35 @@
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+module.exports = {
+  nodeEnv: process.env.NODE_ENV || 'development',
+  port: Number(process.env.PORT) || 5000,
+  apiPrefix: process.env.API_PREFIX || '/api/v1',
+  mongoUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/market_intelligence',
+  clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:3000',
+  logLevel: process.env.LOG_LEVEL || 'info',
+  rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
+  rateLimitMax: Number(process.env.RATE_LIMIT_MAX) || 100,
+  newsApiBaseUrl: process.env.NEWS_API_BASE_URL || 'https://newsapi.org/v2/everything',
+  newsApiKey: process.env.NEWS_API_KEY || '',
+  competitorScrapeSchedule: process.env.COMPETITOR_SCRAPE_SCHEDULE || '*/20 * * * *',
+  newsIngestionSchedule: process.env.NEWS_INGESTION_SCHEDULE || '*/30 * * * *',
+  socialSimulationSchedule: process.env.SOCIAL_SIMULATION_SCHEDULE || '*/10 * * * *',
+  ingestionRequestTimeoutMs: Number(process.env.INGESTION_REQUEST_TIMEOUT_MS) || 15000,
+  ingestionRetryAttempts: Number(process.env.INGESTION_RETRY_ATTEMPTS) || 3,
+  ingestionRetryDelayMs: Number(process.env.INGESTION_RETRY_DELAY_MS) || 1500,
+  alertPriceDropThreshold: Number(process.env.ALERT_PRICE_DROP_THRESHOLD) || 5,
+  alertListingSpikeThreshold: Number(process.env.ALERT_LISTING_SPIKE_THRESHOLD) || 10,
+  alertHeatIndexThreshold: Number(process.env.ALERT_HEAT_INDEX_THRESHOLD) || 75,
+  alertEvaluationSchedule: process.env.ALERT_EVALUATION_SCHEDULE || '*/15 * * * *',
+  redisUrl: process.env.REDIS_URL || 'redis://127.0.0.1:6379',
+  redisEnabled: process.env.REDIS_ENABLED !== 'false',
+  cacheEnabled: process.env.CACHE_ENABLED !== 'false',
+  insightsCacheTtlSeconds: Number(process.env.INSIGHTS_CACHE_TTL_SECONDS) || 120,
+  listingsCacheTtlSeconds: Number(process.env.LISTINGS_CACHE_TTL_SECONDS) || 60,
+  queueEnabled: process.env.QUEUE_ENABLED !== 'false',
+  queuePrefix: process.env.QUEUE_PREFIX || 'market-intelligence',
+  ingestionQueueName: process.env.INGESTION_QUEUE_NAME || 'ingestion-jobs',
+  alertQueueName: process.env.ALERT_QUEUE_NAME || 'alert-jobs',
+};
