@@ -23,13 +23,4 @@ module.exports = {
   alertListingSpikeThreshold: Number(process.env.ALERT_LISTING_SPIKE_THRESHOLD) || 10,
   alertHeatIndexThreshold: Number(process.env.ALERT_HEAT_INDEX_THRESHOLD) || 75,
   alertEvaluationSchedule: process.env.ALERT_EVALUATION_SCHEDULE || '*/15 * * * *',
-  redisUrl: process.env.REDIS_URL || 'redis://127.0.0.1:6379',
-  redisEnabled: process.env.REDIS_ENABLED !== 'false',
-  cacheEnabled: process.env.CACHE_ENABLED !== 'false',
-  insightsCacheTtlSeconds: Number(process.env.INSIGHTS_CACHE_TTL_SECONDS) || 120,
-  listingsCacheTtlSeconds: Number(process.env.LISTINGS_CACHE_TTL_SECONDS) || 60,
-  queueEnabled: process.env.QUEUE_ENABLED !== 'false',
-  queuePrefix: process.env.QUEUE_PREFIX || 'market-intelligence',
-  ingestionQueueName: process.env.INGESTION_QUEUE_NAME || 'ingestion-jobs',
-  alertQueueName: process.env.ALERT_QUEUE_NAME || 'alert-jobs',
 };

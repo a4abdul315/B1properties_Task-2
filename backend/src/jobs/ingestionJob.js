@@ -3,7 +3,6 @@ const cron = require('node-cron');
 const config = require('../utils/config');
 const logger = require('../utils/logger');
 const retry = require('../utils/retry');
-const { enqueueIngestionJob } = require('../queues/ingestionQueue');
 const {
   runCompetitorScraping,
   runNewsIngestion,
@@ -30,22 +29,7 @@ const wrapScheduledJob = (jobName, handler) => {
 };
 
 exports.registerIngestionJobs = () => {
-  cron.schedule(config.competitorScrapeSchedule, async () => {
-    const queued = await enqueueIngestionJob('competitor-scrape');
-    if (!queued) {
-      await wrapScheduledJob('competitor-scrape-job', runCompetitorScraping)();
-    }
-  });
-  cron.schedule(config.newsIngestionSchedule, async () => {
-    const queued = await enqueueIngestionJob('news-ingestion');
-    if (!queued) {
-      await wrapScheduledJob('news-ingestion-job', runNewsIngestion)();
-    }
-  });
-  cron.schedule(config.socialSimulationSchedule, async () => {
-    const queued = await enqueueIngestionJob('social-simulation');
-    if (!queued) {
-      await wrapScheduledJob('social-simulation-job', runSocialSimulation)();
-    }
-  });
+  cron.schedule(config.competitorScrapeSchedule, wrapScheduledJob('competitor-scrape-job', runCompetitorScraping));
+  cron.schedule(config.newsIngestionSchedule, wrapScheduledJob('news-ingestion-job', runNewsIngestion));
+  cron.schedule(config.socialSimulationSchedule, wrapScheduledJob('social-simulation-job', runSocialSimulation));
 };

@@ -12,7 +12,7 @@ This repository contains:
 - a data ingestion layer for competitor listings, news, and simulated social data
 - analytical insight APIs for price tracking, listing velocity, and market heat
 - an alerting system for price drops, listing spikes, high market heat, and social spikes
-- Redis-ready caching and BullMQ-ready queue scaffolding for production-oriented scaling
+- cron-based background jobs for ingestion and alert evaluation
 
 ## Current Status
 
@@ -32,7 +32,7 @@ This repository contains:
 - Competitor comparison and trend charts
 - Live alerts with Socket.IO
 - Demo seed data
-- Production-oriented cache / queue / worker scaffolding
+- Cron-based scheduled jobs
 
 ### Partially Implemented
 
@@ -59,12 +59,10 @@ This repository contains:
 - Morgan
 - Socket.IO
 - node-cron
-- BullMQ-ready queue layer
 
-### Data / Infra
+### Data
 
 - MongoDB
-- Redis optional locally, recommended for production features
 
 ## Repository Structure
 
@@ -81,18 +79,14 @@ This repository contains:
 - Node.js 18+
 - npm 9+
 - MongoDB
-- Redis optional for local development
 
 Recommended local ports:
 
 - frontend: `3000`
 - backend: `5000`
 - MongoDB: `27017`
-- Redis: `6379`
 
 ## Quick Start
-
-The simplest local setup is:
 
 1. Start MongoDB
 2. Create backend and frontend `.env` files
@@ -116,18 +110,13 @@ PORT=5000
 API_PREFIX=/api/v1
 MONGODB_URI=mongodb://127.0.0.1:27017/market_intelligence
 CLIENT_ORIGIN=http://localhost:3000
-REDIS_URL=redis://127.0.0.1:6379
-REDIS_ENABLED=false
-CACHE_ENABLED=false
-QUEUE_ENABLED=false
 NEWS_API_KEY=replace_me
 ```
 
 Notes:
 
-- For the easiest local run, keep Redis disabled
-- If you want cache and queue features locally, start Redis and set `REDIS_ENABLED=true`, `CACHE_ENABLED=true`, and `QUEUE_ENABLED=true`
 - If `NEWS_API_KEY` is missing, news ingestion is skipped by design
+- Redis is no longer required by this codebase
 
 ### Frontend
 
@@ -178,48 +167,6 @@ npm run dev
 Frontend URL:
 
 - `http://localhost:3000`
-
-### Terminal 3: Worker
-
-Only run this when queue support is enabled and Redis is available.
-
-```powershell
-cd backend
-npm run worker
-```
-
-## Local Run Modes
-
-### Easiest Development Mode
-
-Use:
-
-- MongoDB on
-- Redis off
-- `REDIS_ENABLED=false`
-- `CACHE_ENABLED=false`
-- `QUEUE_ENABLED=false`
-
-Run:
-
-- backend
-- frontend
-
-### Production-Like Local Mode
-
-Use:
-
-- MongoDB on
-- Redis on
-- `REDIS_ENABLED=true`
-- `CACHE_ENABLED=true`
-- `QUEUE_ENABLED=true`
-
-Run:
-
-- backend
-- frontend
-- worker
 
 ## Demo Data
 
@@ -396,30 +343,22 @@ Files:
 - [`backend/src/services/ingestion/httpClient.js`](./backend/src/services/ingestion/httpClient.js)
 - [`backend/src/services/ingestion/scraperService.js`](./backend/src/services/ingestion/scraperService.js)
 
-## Production Notes
+## Background Jobs
 
-Production-oriented scaffolding already included:
+This project now uses pure `node-cron` for background scheduling.
 
-- Redis cache support
-- BullMQ queue support
-- separate worker process
-- Prometheus-style `/metrics` endpoint
-- compression
-- queue fallback behavior when Redis is unavailable
-- MongoDB indexing strategy
-- deployment guidance
+Current scheduled flows:
 
-Recommended production split:
+- competitor scraping
+- news ingestion
+- simulated social generation
+- alert evaluation
 
-- frontend: Vercel or CloudFront
-- backend API: AWS ECS / Fargate
-- worker: AWS ECS / Fargate
-- MongoDB: Atlas
-- Redis: ElastiCache
+Relevant files:
 
-Detailed doc:
-
-- [`backend/docs/production-optimization.md`](./backend/docs/production-optimization.md)
+- [`backend/src/jobs/ingestionJob.js`](./backend/src/jobs/ingestionJob.js)
+- [`backend/src/jobs/alertEvaluationJob.js`](./backend/src/jobs/alertEvaluationJob.js)
+- [`backend/src/jobs/index.js`](./backend/src/jobs/index.js)
 
 ## Documentation Map
 
@@ -427,6 +366,7 @@ Detailed doc:
 - Alert system: [`backend/docs/alert-system.md`](./backend/docs/alert-system.md)
 - Data pipeline flow: [`backend/docs/data-pipeline-flow.md`](./backend/docs/data-pipeline-flow.md)
 - Insights examples: [`backend/docs/insights-api-examples.md`](./backend/docs/insights-api-examples.md)
+- Production notes: [`backend/docs/production-optimization.md`](./backend/docs/production-optimization.md)
 - Frontend notes: [`frontend/README.md`](./frontend/README.md)
 
 ## Troubleshooting
@@ -438,20 +378,6 @@ Check:
 - MongoDB is running
 - `backend/.env` exists
 - `MONGODB_URI` is correct
-- if Redis is not installed locally, disable:
-  - `REDIS_ENABLED=false`
-  - `CACHE_ENABLED=false`
-  - `QUEUE_ENABLED=false`
-
-### Redis / queue errors
-
-If you are not testing Redis locally, use:
-
-```env
-REDIS_ENABLED=false
-CACHE_ENABLED=false
-QUEUE_ENABLED=false
-```
 
 ### Seed fails
 

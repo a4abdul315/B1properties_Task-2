@@ -4,7 +4,6 @@ const PriceHistory = require('../../models/PriceHistory');
 const SocialMention = require('../../models/SocialMention');
 const Alert = require('../../models/Alert');
 const logger = require('../../utils/logger');
-const cacheService = require('../../utils/cacheService');
 const { upsertListing, upsertMention } = require('./deduplicationService');
 const { evaluatePriceDropAlert } = require('../alertRuleEngine');
 const {
@@ -84,7 +83,6 @@ exports.persistListingBatch = async (sourceConfig, records) => {
   }
 
   logger.info(`Persisted ${savedListings.length} listings for ${sourceConfig.name}`);
-  await cacheService.delByPattern('insights');
   return savedListings;
 };
 
@@ -98,7 +96,6 @@ exports.persistNewsBatch = async (articles, competitor = null) => {
   }
 
   logger.info(`Persisted ${savedMentions.length} news mentions`);
-  await cacheService.delByPattern('insights');
   return savedMentions;
 };
 
@@ -133,6 +130,5 @@ exports.persistSocialBatch = async (mentions, competitor = null, listing = null)
   }
 
   logger.info(`Persisted ${savedMentions.length} social mentions`);
-  await cacheService.delByPattern('insights');
   return savedMentions;
 };
